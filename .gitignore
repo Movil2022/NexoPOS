@@ -48,6 +48,36 @@ tests/Post/*
 storage/snapshots/*.sql
 storage/temporary-files/*
 .idea
+
+# Archivos de configuración local y scripts de diagnóstico
+*.bat
+*.cmd
+*.exe
+php.ini
+php.ini.backup
+php_custom.ini
+check_php.php
+configure_sqlite.php
+debug_database_setup.php
+diagnose_wizard.php
+docker_solution.php
+fix_pdo_driver_issue.php
+fix_php_ini_system.php
+force_pdo_setup.php
+force_reset_installation.php
+repair_pdo.php
+setup_nexopos_xampp.php
+start_nexopos_safe.php
+test_*.php
+verify_pdo.php
+documentation.html
+output.html
+report.xml
+
+# Archivos temporales de Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 public/hot
 .phpunit.cache/test-results
 storage/dotenv-editor
