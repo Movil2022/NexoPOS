@@ -49,6 +49,9 @@ RUN composer install --no-dev --optimize-autoloader
 RUN npm install
 RUN npm run build
 
+# Generate Laravel application key
+RUN cp .env.example .env && php artisan key:generate
+
 # Change back to root
 USER root
 
@@ -59,11 +62,22 @@ RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 # Configure Apache
 COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
 
-# Create startup script
+# Create startup script that properly handles Railway's PORT
 RUN echo '#!/bin/bash\n\
+set -e\n\
 PORT=${PORT:-80}\n\
-sed -i "s/80/$PORT/g" /etc/apache2/sites-available/000-default.conf\n\
-sed -i "s/Listen 80/Listen $PORT/g" /etc/apache2/ports.conf\n\
+echo "Starting Apache on port $PORT"\n\
+sed -i "s/*:80/*:$PORT/g" /etc/apache2/sites-available/000-default.conf\n\
+echo "Listen $PORT" > /etc/apache2/ports.conf\n\
+# Wait for database and run migrations\n\
+echo "Waiting for database..."\n\
+sleep 10\n\
+echo "Running database migrations..."\n\
+php artisan migrate --force || echo "Migration failed, continuing..."\n\
+echo "Optimizing Laravel..."\n\
+php artisan config:cache\n\
+php artisan route:cache\n\
+php artisan view:cache\n\
 exec apache2-foreground' > /usr/local/bin/start-apache.sh && \
     chmod +x /usr/local/bin/start-apache.sh
 
