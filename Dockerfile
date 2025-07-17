@@ -59,7 +59,15 @@ RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 # Configure Apache
 COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
 
-# Expose port 80
+# Create startup script
+RUN echo '#!/bin/bash\n\
+PORT=${PORT:-80}\n\
+sed -i "s/80/$PORT/g" /etc/apache2/sites-available/000-default.conf\n\
+sed -i "s/Listen 80/Listen $PORT/g" /etc/apache2/ports.conf\n\
+exec apache2-foreground' > /usr/local/bin/start-apache.sh && \
+    chmod +x /usr/local/bin/start-apache.sh
+
+# Expose port 80 (Railway will map to $PORT)
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+CMD ["/usr/local/bin/start-apache.sh"]
