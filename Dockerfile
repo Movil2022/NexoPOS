@@ -41,6 +41,9 @@ RUN mkdir -p /var/www/html/.npm && chown -R www-data:www-data /var/www/html/.npm
 # Change current user to www
 USER www-data
 
+# Set npm cache directory
+ENV NPM_CONFIG_CACHE=/var/www/html/.npm
+
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 RUN npm install
