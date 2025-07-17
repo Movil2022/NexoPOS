@@ -34,6 +34,10 @@ COPY . /var/www/html
 # Copy existing application directory permissions
 COPY --chown=www-data:www-data . /var/www/html
 
+# Fix npm cache permissions
+RUN chown -R www-data:www-data /var/www/html
+RUN mkdir -p /var/www/html/.npm && chown -R www-data:www-data /var/www/html/.npm
+
 # Change current user to www
 USER www-data
 
